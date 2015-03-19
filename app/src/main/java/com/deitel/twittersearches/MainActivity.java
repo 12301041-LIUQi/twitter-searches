@@ -33,10 +33,10 @@ public class MainActivity extends ListActivity
    // name of SharedPreferences XML file that stores the saved searches 
    private static final String SEARCHES = "searches";
    
-//   private EditText queryEditText; // EditText where user enters a query
-    private AutoCompleteTextView queryEditText; // EditText where user enters a query
-//   private AutoCompleteTextView tagEditText; // EditText where user tags a query
-    private EditText tagEditText; // EditText where user tags a query
+   private EditText queryEditText; // EditText where user enters a query
+//    private AutoCompleteTextView queryEditText; // EditText where user enters a query
+   private AutoCompleteTextView tagEditText; // EditText where user tags a query
+//    private EditText tagEditText; // EditText where user tags a query
    private SharedPreferences savedSearches; // user's favorite searches
    private SharedPreferences savedQuery; // user's favorite query
    private ArrayList<String> tags; // list of tags for saved searches
@@ -51,10 +51,10 @@ public class MainActivity extends ListActivity
       setContentView(R.layout.activity_main);
 
       // get references to the EditTexts  
-//      queryEditText = (EditText) findViewById(R.id.queryEditText);
-      queryEditText = (AutoCompleteTextView) findViewById(R.id.queryEditText);
-//      tagEditText = (AutoCompleteTextView) findViewById(R.id.tagEditText);
-      tagEditText = (EditText) findViewById(R.id.tagEditText);
+      queryEditText = (EditText) findViewById(R.id.queryEditText);
+//      queryEditText = (AutoCompleteTextView) findViewById(R.id.queryEditText);
+      tagEditText = (AutoCompleteTextView) findViewById(R.id.tagEditText);
+//      tagEditText = (EditText) findViewById(R.id.tagEditText);
       
       // get the SharedPreferences containing the user's saved searches 
       savedSearches = getSharedPreferences(SEARCHES, MODE_PRIVATE);
@@ -67,7 +67,7 @@ public class MainActivity extends ListActivity
       adapter = new ArrayAdapter<String>(this, R.layout.list_item, tags);
       setListAdapter(adapter);
 
-//       tagEditText.setAdapter(adapter);
+       tagEditText.setAdapter(adapter);
 
 //       // store the saved tags in an ArrayList then sort them
 //       querys = new ArrayList<String>(savedQuery.getAll().keySet());

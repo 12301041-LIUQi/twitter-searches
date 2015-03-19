@@ -24,12 +24,13 @@
     <LinearLayout
         android:layout_gravity="fill_horizontal" >
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/tagEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|fill_horizontal"
             android:layout_weight="1"
+            android:completionThreshold="2"
             android:hint="@string/tagPrompt"
             android:imeOptions="actionDone" />
 
