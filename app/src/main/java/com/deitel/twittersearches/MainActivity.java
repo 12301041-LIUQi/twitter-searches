@@ -6,6 +6,7 @@ package com.deitel.twittersearches;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -30,10 +33,14 @@ public class MainActivity extends ListActivity
    // name of SharedPreferences XML file that stores the saved searches 
    private static final String SEARCHES = "searches";
    
-   private EditText queryEditText; // EditText where user enters a query
-   private EditText tagEditText; // EditText where user tags a query
+//   private EditText queryEditText; // EditText where user enters a query
+    private AutoCompleteTextView queryEditText; // EditText where user enters a query
+//   private AutoCompleteTextView tagEditText; // EditText where user tags a query
+    private EditText tagEditText; // EditText where user tags a query
    private SharedPreferences savedSearches; // user's favorite searches
+   private SharedPreferences savedQuery; // user's favorite query
    private ArrayList<String> tags; // list of tags for saved searches
+//    private ArrayList<String> querys; // list of tags for saved searches
    private ArrayAdapter<String> adapter; // binds tags to ListView
    
    // called when MainActivity is first created
@@ -44,21 +51,33 @@ public class MainActivity extends ListActivity
       setContentView(R.layout.activity_main);
 
       // get references to the EditTexts  
-      queryEditText = (EditText) findViewById(R.id.queryEditText);
+//      queryEditText = (EditText) findViewById(R.id.queryEditText);
+      queryEditText = (AutoCompleteTextView) findViewById(R.id.queryEditText);
+//      tagEditText = (AutoCompleteTextView) findViewById(R.id.tagEditText);
       tagEditText = (EditText) findViewById(R.id.tagEditText);
       
       // get the SharedPreferences containing the user's saved searches 
-      savedSearches = getSharedPreferences(SEARCHES, MODE_PRIVATE); 
+      savedSearches = getSharedPreferences(SEARCHES, MODE_PRIVATE);
 
       // store the saved tags in an ArrayList then sort them
       tags = new ArrayList<String>(savedSearches.getAll().keySet());
-      Collections.sort(tags, String.CASE_INSENSITIVE_ORDER); 
-      
+      Collections.sort(tags, String.CASE_INSENSITIVE_ORDER);
+
       // create ArrayAdapter and use it to bind tags to the ListView
       adapter = new ArrayAdapter<String>(this, R.layout.list_item, tags);
       setListAdapter(adapter);
-      
-      // register listener to save a new or edited search 
+
+//       tagEditText.setAdapter(adapter);
+
+//       // store the saved tags in an ArrayList then sort them
+//       querys = new ArrayList<String>(savedQuery.getAll().keySet());
+//       Collections.sort(querys, String.CASE_INSENSITIVE_ORDER);
+//
+//       // create ArrayAdapter and use it to bind tags to the ListView
+//       adapter = new ArrayAdapter<String>(this, R.layout.list_item, querys);
+//       setListAdapter(adapter);
+
+      // register listener to save a new or edited search
       ImageButton saveButton = 
          (ImageButton) findViewById(R.id.saveButton);
       saveButton.setOnClickListener(saveButtonListener);
@@ -71,17 +90,19 @@ public class MainActivity extends ListActivity
    } // end method onCreate
 
    // saveButtonListener saves a tag-query pair into SharedPreferences
-   public OnClickListener saveButtonListener = new OnClickListener() 
+   public OnClickListener saveButtonListener = new OnClickListener()
    {
       @Override
-      public void onClick(View v) 
+      public void onClick(View v)
       {
          // create tag if neither queryEditText nor tagEditText is empty
          if (queryEditText.getText().length() > 0 &&
             tagEditText.getText().length() > 0)
          {
-            addTaggedSearch(queryEditText.getText().toString(), 
+            addTaggedSearch(queryEditText.getText().toString(),
                tagEditText.getText().toString());
+//            String fullURL = getString(R.string.searchURL) + Uri.encode(queryEditText.getText().toString(), "UTF-8");
+//            addTaggedSearch(fullURL,tagEditText.getText().toString());
             queryEditText.setText(""); // clear queryEditText
             tagEditText.setText(""); // clear tagEditText
             
@@ -97,10 +118,10 @@ public class MainActivity extends ListActivity
 
             // set dialog's message to display
             builder.setMessage(R.string.missingMessage);
-            
+
             // provide an OK button that simply dismisses the dialog
-            builder.setPositiveButton(R.string.OK, null); 
-            
+            builder.setPositiveButton(R.string.OK, null);
+
             // create AlertDialog from the AlertDialog.Builder
             AlertDialog errorDialog = builder.create();
             errorDialog.show(); // display the modal dialog
@@ -109,17 +130,25 @@ public class MainActivity extends ListActivity
    }; // end OnClickListener anonymous inner class
 
    // add new search to the save file, then refresh all Buttons
+   @TargetApi(Build.VERSION_CODES.GINGERBREAD)
    private void addTaggedSearch(String query, String tag)
    {
+       String urlS = getString(R.string.searchURL) + tag;
       // get a SharedPreferences.Editor to store new tag/query pair
       SharedPreferences.Editor preferencesEditor = savedSearches.edit();
-      preferencesEditor.putString(tag, query); // store current search
+      preferencesEditor.putString(urlS, query); // store current search
       preferencesEditor.apply(); // store the updated preferences
+//       SharedPreferences.Editor preferencesEditor2 = savedQuery.edit();
+//       preferencesEditor2.putString(query,tag); // store current search
+//       preferencesEditor2.apply(); // store the updated preferences
       
       // if tag is new, add to and sort tags, then display updated list
       if (!tags.contains(tag))
       {
-         tags.add(tag); // add new tag
+          String urlString = getString(R.string.searchURL) +
+                  Uri.encode(savedSearches.getString(tag, ""), "UTF-8");
+          tags.add(urlString); // add new tag
+//          tags.add(tag); // add new tag
          Collections.sort(tags, String.CASE_INSENSITIVE_ORDER);
          adapter.notifyDataSetChanged(); // rebind tags to ListView
       }
@@ -136,7 +165,6 @@ public class MainActivity extends ListActivity
          String tag = ((TextView) view).getText().toString();
          String urlString = getString(R.string.searchURL) +
             Uri.encode(savedSearches.getString(tag, ""), "UTF-8");
-         
          // create an Intent to launch a web browser    
          Intent webIntent = new Intent(Intent.ACTION_VIEW, 
             Uri.parse(urlString));                      
@@ -164,7 +192,7 @@ public class MainActivity extends ListActivity
             // set the AlertDialog's title
             builder.setTitle(
                getString(R.string.shareEditDeleteTitle, tag));
-            
+
             // set list of items to display in dialog
             builder.setItems(R.array.dialog_items, 
                new DialogInterface.OnClickListener()
@@ -258,7 +286,8 @@ public class MainActivity extends ListActivity
          new DialogInterface.OnClickListener() 
          {
             // called when "Cancel" Button is clicked
-            public void onClick(DialogInterface dialog, int id) 
+            @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+            public void onClick(DialogInterface dialog, int id)
             {
                tags.remove(tag); // remove tag from tags
                
