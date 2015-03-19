@@ -136,7 +136,7 @@ public class MainActivity extends ListActivity
        String urlS = getString(R.string.searchURL) + tag;
       // get a SharedPreferences.Editor to store new tag/query pair
       SharedPreferences.Editor preferencesEditor = savedSearches.edit();
-      preferencesEditor.putString(urlS, query); // store current search
+      preferencesEditor.putString(tag, query); // store current search
       preferencesEditor.apply(); // store the updated preferences
 //       SharedPreferences.Editor preferencesEditor2 = savedQuery.edit();
 //       preferencesEditor2.putString(query,tag); // store current search

@@ -3,7 +3,7 @@
 	<string name="app_name">Twitter Enhanced Query</string>
 	<string name="searchURL">http://m.flckr.com/#/search/</string>
 	<string name="tagPrompt">Tag your favorite query</string>
-	<string name="queryPrompt">Enter URLr query here</string>
+	<string name="queryPrompt">Enter URL query here</string>
 	<string name="taggedSearches">Favorite Twitter Searches</string>
 	<string name="saveDescription">Touch this button to save your URL</string>
 	<string name="shareEditDeleteTitle">Share, Edit or Delete the search tagged as \"%s\"</string>
